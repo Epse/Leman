@@ -21,29 +21,35 @@ func itemListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if operation == "list" {
 		//TODO: return all items in neat JSON
-		panic("List operation not implemented")
+		w.WriteHeader(http.StatusNotImplemented)
+		fmt.Fprintf(w, "501 not implemented.")
 	} else if operation == "instock" {
 		//TODO: return all items in stock in neat JSON
-		panic("instock op not implemented")
+		w.WriteHeader(http.StatusNotImplemented)
+		fmt.Fprintf(w, "501 not implemented.")
 	} else if operation == "rented" {
 		//TODO: return all rented items as neat JSON
-		panic("rented op not implemented")
+		w.WriteHeader(http.StatusNotImplemented)
+		fmt.Fprintf(w, "501 not implemented.")
 	}
 }
 
 func itemViewHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
-	fmt.Fprintf(w, "WIP")
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintf(w, "501 not implemented.")
 }
 
 func itemUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
-	fmt.Fprintf(w, "WIP")
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintf(w, "501 not implemented.")
 }
 
 func itemNewHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
-	fmt.Fprintf(w, "WIP")
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintf(w, "501 not implemented.")
 }
 
 func main() {
