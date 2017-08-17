@@ -10,13 +10,18 @@ import (
 // operation is one of the following: list, instock, rented
 // list gives all items, instock all those not rented and rented all those rented out
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
-	operation := string(r.URL.Path[len("/items/")])
+	operation := strings.TrimPrefix(string(r.URL.Path), "/items/")
 	operation = strings.TrimSuffix(operation, "/")
 
 	if strings.Contains(operation, "/") {
 		w.WriteHeader(http.StatusBadRequest)
 		//TODO: more informative error message
 		fmt.Fprintf(w, "400 BAD REQUEST.")
+		return
+	} else if operation == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		//TODO: more informative error message
+		fmt.Fprintf(w, "400 BAD REQUEST")
 	}
 
 	if operation == "list" {
