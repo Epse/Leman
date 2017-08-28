@@ -42,6 +42,11 @@ func itemNewHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "501 not implemented.")
 }
 
+func unresolvedRouteHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusBadRequest)
+	fmt.Fprintf(w, "BAD REQUEST: route does not exist")
+}
+
 func main() {
 	http.HandleFunc("/items/list/", itemListHandler)
 	http.HandleFunc("/items/instock/", itemsInStockHandler)
@@ -49,5 +54,6 @@ func main() {
 	http.HandleFunc("/item/view/", itemViewHandler)
 	http.HandleFunc("/item/update/", itemUpdateHandler)
 	http.HandleFunc("/item/new/", itemNewHandler)
+	http.HandleFunc("*", unresolvedRouteHandler)
 	http.ListenAndServe(":8080", nil)
 }
