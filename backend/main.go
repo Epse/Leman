@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
