@@ -14,7 +14,7 @@ type Item struct {
 	Brand                 string
 	PricePerTime          float32
 	TimeUnit              string
-	InStockIIT            bool
+	inStockIIT            bool
 }
 
 func (i Item) IsInStock() bool {
