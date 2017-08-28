@@ -6,37 +6,22 @@ import (
 	"strings"
 )
 
-// This function handles all requests to /items/operation
-// operation is one of the following: list, instock, rented
-// list gives all items, instock all those not rented and rented all those rented out
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
-	operation := strings.TrimPrefix(string(r.URL.Path), "/items/")
-	operation = strings.TrimSuffix(operation, "/")
+	//TODO
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintf(w, "501 NOT IMPLEMENTED")
+}
 
-	if strings.Contains(operation, "/") {
-		w.WriteHeader(http.StatusBadRequest)
-		//TODO: more informative error message
-		fmt.Fprintf(w, "400 BAD REQUEST.")
-		return
-	} else if operation == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		//TODO: more informative error message
-		fmt.Fprintf(w, "400 BAD REQUEST")
-	}
+func itemsInStockHandler(w http.ResponseWriter, r *http.Request) {
+	//TODO
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintf(w, "501 NOT IMPLEMENTED")
+}
 
-	if operation == "list" {
-		//TODO: return all items in neat JSON
-		w.WriteHeader(http.StatusNotImplemented)
-		fmt.Fprintf(w, "501 not implemented.")
-	} else if operation == "instock" {
-		//TODO: return all items in stock in neat JSON
-		w.WriteHeader(http.StatusNotImplemented)
-		fmt.Fprintf(w, "501 not implemented.")
-	} else if operation == "rented" {
-		//TODO: return all rented items as neat JSON
-		w.WriteHeader(http.StatusNotImplemented)
-		fmt.Fprintf(w, "501 not implemented.")
-	}
+func itemsRentedHandler(w http.ResponseWriter, r *http.Request) {
+	//TODO
+	w.WriteHeader(http.StatusNotImplemented)
+	fmt.Fprintf(w, "501 NOT IMPLEMENTED")
 }
 
 func itemViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +43,9 @@ func itemNewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/items/", itemListHandler)
+	http.HandleFunc("/items/list/", itemListHandler)
+	http.HandleFunc("/items/instock/", itemsInStockHandler)
+	http.HandleFunc("/items/rented/", itemsRentedHandler)
 	http.HandleFunc("/item/view/", itemViewHandler)
 	http.HandleFunc("/item/update/", itemUpdateHandler)
 	http.HandleFunc("/item/new/", itemNewHandler)
