@@ -3,8 +3,8 @@
 package config
 
 import (
-	"errors"
 	"github.com/BurntSushi/toml"
+	"github.com/pkg/errors"
 	"os"
 )
 
