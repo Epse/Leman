@@ -14,12 +14,12 @@ type BasicConfig struct {
 	DB_Database string
 }
 
-func (bc BasicConfig) ReadTOML(data string) error {
+func (bc *BasicConfig) ReadTOML(data string) error {
 	_, err := toml.Decode(data, &bc)
 	return errors.Wrap(err, "Couldn't decode TOML config file.")
 }
 
-func (bc BasicConfig) ReadConfig(fpath string) error {
+func (bc *BasicConfig) ReadConfig(fpath string) error {
 	_, err := os.Stat(fpath)
 	if err != nil {
 		//TODO: more informative help message
