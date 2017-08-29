@@ -14,9 +14,32 @@ type BasicConfig struct {
 	DB_Database string
 }
 
+func (bc *BasicConfig) Verify() error {
+	var errorString string
+	if bc.DB_URL == "" {
+		errorString += "Incomplete config file: no DB_URL field present\n"
+	}
+	if bc.DB_Database == "" {
+		errorString += "Incomplete config file: no DB_URL field present\n"
+	}
+	if bc.DB_Password == "" {
+		errorString += "Incomplete config file: no DB_URL field present\n"
+	}
+	if errorString != "" {
+		return errors.New(errorString)
+	} else {
+		return nil
+	}
+}
+
 func (bc *BasicConfig) ReadTOML(data string) error {
 	_, err := toml.Decode(data, &bc)
-	return errors.Wrap(err, "Couldn't decode TOML config file.")
+	if err != nil {
+		err = errors.Wrap(err, "Could not decode TOML")
+	} else {
+		err = bc.Verify()
+	}
+	return err
 }
 
 func (bc *BasicConfig) ReadConfig(fpath string) error {
@@ -31,15 +54,5 @@ func (bc *BasicConfig) ReadConfig(fpath string) error {
 		return errors.Wrap(err, "Config file decode error")
 	}
 
-	// Verifying the contents of the config file
-	if bc.DB_URL == "" {
-		return errors.New("Inclomplete config file: no DB_URL field present")
-	}
-	if bc.DB_Password == "" {
-		return errors.New("Inclomplete config file: no DB_Password field present")
-	}
-	if bc.DB_Database == "" {
-		return errors.New("Inclomplete config file: no DB_Database field present")
-	}
-	return nil
+	return bc.Verify()
 }
