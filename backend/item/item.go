@@ -19,7 +19,7 @@ type Item struct {
 
 func (i Item) IsInStock() bool {
 	if i.IsIndividuallyTracked {
-		return i.InStockIIT
+		return i.inStockIIT
 	} else {
 		return i.QuantityAvailableIGT > 0
 	}
