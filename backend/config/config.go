@@ -23,12 +23,12 @@ func (bc *BasicConfig) ReadConfig(fpath string) error {
 	_, err := os.Stat(fpath)
 	if err != nil {
 		//TODO: more informative help message
-		panic("Missing config file!")
+		return errors.New("Config file not found")
 	}
 
 	_, err = toml.DecodeFile(fpath, &bc)
 	if err != nil {
-		panic("Can't decode config file!")
+		return errors.Wrap(err, "Config file decode error")
 	}
 
 	// Verifying the contents of the config file

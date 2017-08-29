@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/Epse/Leman/backend/config"
+	"github.com/pkg/errors"
 	"net/http"
 )
+
+var conf config.BasicConfig
 
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
@@ -47,6 +51,12 @@ func unresolvedRouteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Load the config file
+	err := conf.ReadConfig("./config.toml")
+	if err != nil {
+		panic(errors.Wrap(err, "Configuration error"))
+	}
+
 	http.HandleFunc("/items/list/", itemListHandler)
 	http.HandleFunc("/items/instock/", itemsInStockHandler)
 	http.HandleFunc("/items/rented/", itemsRentedHandler)
