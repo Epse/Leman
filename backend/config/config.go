@@ -12,6 +12,7 @@ type BasicConfig struct {
 	DB_URL      string
 	DB_Password string
 	DB_Database string
+	DB_User     string
 }
 
 func (bc *BasicConfig) Verify() error {
@@ -24,6 +25,9 @@ func (bc *BasicConfig) Verify() error {
 	}
 	if bc.DB_Password == "" {
 		errorString += "Incomplete config file: no DB_URL field present\n"
+	}
+	if bc.DB_User == "" {
+		errorString += "Incomplete config file: no DB_User field present\n"
 	}
 	if errorString != "" {
 		return errors.New(errorString)

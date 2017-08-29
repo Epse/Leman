@@ -16,7 +16,7 @@ func TestReadTOMLEmptyString(t *testing.T) {
 func TestReadTOMLBasicConfigReuse(t *testing.T) {
 	var bc BasicConfig
 	bc.DB_URL = "localhost"
-	err := bc.ReadTOML("DB_URL=\"test\"\nDB_Password=\"pswd\"\nDB_Database=\"testdb\"")
+	err := bc.ReadTOML("DB_URL=\"test\"\nDB_Password=\"pswd\"\nDB_Database=\"testdb\"\nDB_User=\"usr\"")
 	if err != nil {
 		t.Fail()
 	}
@@ -27,6 +27,9 @@ func TestReadTOMLBasicConfigReuse(t *testing.T) {
 		t.Fail()
 	}
 	if bc.DB_Database != "testdb" {
+		t.Fail()
+	}
+	if bc.DB_User != "usr" {
 		t.Fail()
 	}
 }
@@ -53,6 +56,13 @@ func TestVerify(t *testing.T) {
 		t.Fail()
 	}
 
+	bc.DB_User = "usr"
+	err = bc.Verify()
+	if err == nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
 	bc.DB_Password = "pass"
 	err = bc.Verify()
 	if err != nil {
@@ -68,6 +78,13 @@ func TestVerify(t *testing.T) {
 	}
 
 	bc.DB_Database = ""
+	err = bc.Verify()
+	if err == nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	bc.DB_User = ""
 	err = bc.Verify()
 	if err == nil {
 		fmt.Println(err)
