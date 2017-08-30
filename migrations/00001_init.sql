@@ -105,11 +105,11 @@ CREATE TABLE Link (
 -- SQL in this section is executed when the migration is rolled back.
 DROP TABLE Link;
 DROP TABLE Trackables;
-DROP TABLE Renters;
 DROP TABLE Rentals;
+DROP TABLE Renters;
 DROP TABLE Products;
 DROP TABLE Brands;
 DROP TABLE Categories;
 DROP TABLE Locations;
-DROP TABLE Roles;
 DROP TABLE Users;
+DROP TABLE Roles;
