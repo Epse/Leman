@@ -60,22 +60,90 @@ func unresolvedRouteHandler(w http.ResponseWriter, r *http.Request) {
 	log.Error("Unresolved route requested, route: " + r.URL.String())
 }
 
-func main() {
-	// Set up logging
+func loggingSetup() error {
 	var logFormat = logging.MustStringFormatter(
+		`%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x} %{message}`,
+	)
+	var logConsoleFormat = logging.MustStringFormatter(
 		`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}`,
 	)
-	logBackend := logging.NewLogBackend(os.Stdout, "", 0)
-	backendFormatter := logging.NewBackendFormatter(logBackend, logFormat)
-	logging.SetBackend(backendFormatter)
+
+	var loggingLeveledFileBackend logging.LeveledBackend
+	var loggingLeveledStdoutBackend logging.LeveledBackend
+
+	if conf.Logging.LogToStdout {
+		logStdoutBackend := logging.NewLogBackend(os.Stdout, "", 0)
+		backendStdoutFormatter := logging.NewBackendFormatter(logStdoutBackend, logConsoleFormat)
+		backendStdoutFormatterLeveled := logging.AddModuleLevel(backendStdoutFormatter)
+		switch conf.Logging.StdoutLogLevel {
+		case "DEBUG":
+			backendStdoutFormatterLeveled.SetLevel(logging.DEBUG, "")
+		case "INFO":
+			backendStdoutFormatterLeveled.SetLevel(logging.INFO, "")
+		case "NOTICE":
+			backendStdoutFormatterLeveled.SetLevel(logging.NOTICE, "")
+		case "WARNING":
+			backendStdoutFormatterLeveled.SetLevel(logging.WARNING, "")
+		case "ERROR":
+			backendStdoutFormatterLeveled.SetLevel(logging.ERROR, "")
+		case "CRITICAL":
+			backendStdoutFormatterLeveled.SetLevel(logging.CRITICAL, "")
+		default:
+			return errors.New("invalid stdout log level")
+		}
+		loggingLeveledStdoutBackend = backendStdoutFormatterLeveled
+	}
+	if conf.Logging.LogToFile {
+		f, err := os.Create(conf.Logging.LogFile)
+		if err != nil {
+			return errors.Wrap(err, "Could not create log file")
+		}
+		logFileBackend := logging.NewLogBackend(f, "", 0)
+		backendFileFormatter := logging.NewBackendFormatter(logFileBackend, logFormat)
+		backendFileFormatterLeveled := logging.AddModuleLevel(backendFileFormatter)
+		switch conf.Logging.FileLogLevel {
+		case "DEBUG":
+			backendFileFormatterLeveled.SetLevel(logging.DEBUG, "")
+		case "INFO":
+			backendFileFormatterLeveled.SetLevel(logging.INFO, "")
+		case "NOTICE":
+			backendFileFormatterLeveled.SetLevel(logging.NOTICE, "")
+		case "WARNING":
+			backendFileFormatterLeveled.SetLevel(logging.WARNING, "")
+		case "ERROR":
+			backendFileFormatterLeveled.SetLevel(logging.ERROR, "")
+		case "CRITICAL":
+			backendFileFormatterLeveled.SetLevel(logging.CRITICAL, "")
+		default:
+			return errors.New("invalid file log level")
+		}
+		loggingLeveledFileBackend = backendFileFormatterLeveled
+	}
+
+	if conf.Logging.LogToFile && conf.Logging.LogToStdout {
+		logging.SetBackend(loggingLeveledFileBackend, loggingLeveledStdoutBackend)
+	} else if conf.Logging.LogToFile {
+		logging.SetBackend(loggingLeveledFileBackend)
+	} else if conf.Logging.LogToStdout {
+		logging.SetBackend(loggingLeveledStdoutBackend)
+	}
 	log.Info("Logging initialized")
 
+	return nil
+}
+
+func main() {
 	// Load the config file
 	err := conf.ReadConfig("./config.toml")
 	if err != nil {
 		panic(errors.Wrap(err, "Configuration error"))
 	}
-	log.Info("Config file read")
+
+	// Set up logging
+	err = loggingSetup()
+	if err != nil {
+		panic(err)
+	}
 
 	http.HandleFunc("/items/list/", itemListHandler)
 	http.HandleFunc("/items/instock/", itemsInStockHandler)
