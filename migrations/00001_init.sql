@@ -31,7 +31,7 @@ CREATE TABLE Locations (
 
 CREATE TABLE Categories (
        CategoryID serial PRIMARY KEY,
-       Title text UNIQUE NOT NULL,
+       Title text UNIQUE NOT NULL
 );
 
 CREATE TABLE Brands (
@@ -49,18 +49,18 @@ CREATE TABLE Products (
        TimeUnit text NOT NULL,
        CONSTRAINT products_brand_brands_brandid_fkey FOREIGN KEY (Brand)
                   REFERENCES Brands (BrandID) MATCH SIMPLE
-                  ON UPDATE NO ACTION ON DELETE RESTRICT
+                  ON UPDATE NO ACTION ON DELETE RESTRICT,
        CONSTRAINT products_category_categories_categoryid_fkey FOREIGN KEY (Category)
                   REFERENCES Categories (CategoryID) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE RESTRICT
 );
 
 CREATE TABLE Renters (
-RenterID serial PRIMARY KEY,
-Title text NOT NULL,
-Phone text NOT NULL,
-Email text NOT NULL,
-Address text NOT NULL
+       RenterID serial PRIMARY KEY,
+       Title text NOT NULL,
+       Phone text NOT NULL,
+       Email text NOT NULL,
+       Address text NOT NULL
 );
 
 CREATE TABLE Rentals (
