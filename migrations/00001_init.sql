@@ -1,5 +1,11 @@
 -- +goose Up
 -- SQL in this section is executed when the migration is applied.
+CREATE TABLE Roles (
+RoleID serial PRIMARY KEY,
+Title text UNIQUE NOT NULL,
+PermissionLevel int NOT NULL
+);
+
 CREATE TABLE Users (
        UserID serial PRIMARY KEY,
        Email text UNIQUE NOT NULL,
@@ -13,12 +19,6 @@ CREATE TABLE Users (
        CONSTRAINT user_role_role_id_fkey FOREIGN KEY (RoleID)
                   REFERENCES Roles (RoleID) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE RESTRICT
-);
-
-CREATE TABLE Roles (
-       RoleID serial PRIMARY KEY,
-       Title text UNIQUE NOT NULL,
-       PermissionLevel int NOT NULL
 );
 
 CREATE TABLE Locations (
@@ -55,6 +55,14 @@ CREATE TABLE Products (
                   ON UPDATE NO ACTION ON DELETE RESTRICT
 );
 
+CREATE TABLE Renters (
+RenterID serial PRIMARY KEY,
+Title text NOT NULL,
+Phone text NOT NULL,
+Email text NOT NULL,
+Address text NOT NULL
+);
+
 CREATE TABLE Rentals (
        RentalID bigserial PRIMARY KEY,
        RentedFrom timestamp with time zone NOT NULL,
@@ -65,14 +73,6 @@ CREATE TABLE Rentals (
        CONSTRAINT rentals_renter_renters_renterid_fkey FOREIGN KEY (Renter)
                   REFERENCES Renters (RenterID) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE RESTRICT
-);
-
-CREATE TABLE Renters (
-       RenterID serial PRIMARY KEY,
-       Title text NOT NULL,
-       Phone text NOT NULL,
-       Email text NOT NULL,
-       Address text NOT NULL
 );
 
 CREATE TABLE Trackables (
