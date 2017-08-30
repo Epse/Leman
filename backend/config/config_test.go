@@ -5,90 +5,24 @@ import (
 	"testing"
 )
 
-func TestReadTOMLEmptyString(t *testing.T) {
-	var bc BasicConfig
-	err := bc.ReadTOML("")
-	if err == nil {
-		t.Fail()
-	}
-}
-
-func TestReadTOMLBasicConfigReuse(t *testing.T) {
-	var bc BasicConfig
-	bc.DB_URL = "localhost"
-	err := bc.ReadTOML("DB_URL=\"test\"\nDB_Password=\"pswd\"\nDB_Database=\"testdb\"\nDB_User=\"usr\"")
-	if err != nil {
-		t.Fail()
-	}
-	if bc.DB_URL != "test" {
-		t.Fail()
-	}
-	if bc.DB_Password != "pswd" {
-		t.Fail()
-	}
-	if bc.DB_Database != "testdb" {
-		t.Fail()
-	}
-	if bc.DB_User != "usr" {
-		t.Fail()
-	}
-}
-
 func TestVerify(t *testing.T) {
 	var bc BasicConfig
+	if bc.Verify() == nil {
+		t.Fail()
+	}
+
+	bc.Database.URL = "localhost"
+	bc.Database.Password = "test"
+	bc.Database.User = "user"
+	bc.Database.Database = "db"
+	bc.Logging.LogToFile = false
+	bc.Logging.LogToStdout = true
+	bc.Logging.StdoutLogLevel = "INFO"
+
 	err := bc.Verify()
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	bc.DB_URL = "test"
-	err = bc.Verify()
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	bc.DB_Database = "test2"
-	err = bc.Verify()
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	bc.DB_User = "usr"
-	err = bc.Verify()
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	bc.DB_Password = "pass"
-	err = bc.Verify()
 	if err != nil {
-		fmt.Println(err)
 		t.Fail()
-	}
-
-	bc.DB_URL = ""
-	err = bc.Verify()
-	if err == nil {
 		fmt.Println(err)
-		t.Fail()
-	}
-
-	bc.DB_Database = ""
-	err = bc.Verify()
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	bc.DB_User = ""
-	err = bc.Verify()
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
 	}
 }
 

@@ -1,4 +1,9 @@
-DB_URL="test"
-DB_Password="lol"
-DB_Database="db"
-DB_User="usr"
+[Database]
+    User = "test"
+    Password = "test"
+    Database = "db"
+    URL = "localhost"
+
+[Logging]
+    LogToStdout = true
+    StdoutLogLevel = "INFO"

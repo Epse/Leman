@@ -6,44 +6,60 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 	"os"
+	"reflect"
 )
 
 type BasicConfig struct {
-	DB_URL      string
-	DB_Password string
-	DB_Database string
-	DB_User     string
+	Database DatabaseConfig
+	Logging  LoggingConfig
+}
+
+type DatabaseConfig struct {
+	URL      string
+	Password string
+	User     string
+	Database string
+}
+
+type LoggingConfig struct {
+	LogToFile      bool
+	LogToStdout    bool
+	LogFile        string
+	FileLogLevel   string
+	StdoutLogLevel string
 }
 
 func (bc *BasicConfig) Verify() error {
 	var errorString string
-	if bc.DB_URL == "" {
-		errorString += "Incomplete config file: no DB_URL field present\n"
-	}
-	if bc.DB_Database == "" {
-		errorString += "Incomplete config file: no DB_URL field present\n"
-	}
-	if bc.DB_Password == "" {
-		errorString += "Incomplete config file: no DB_URL field present\n"
-	}
-	if bc.DB_User == "" {
-		errorString += "Incomplete config file: no DB_User field present\n"
-	}
-	if errorString != "" {
-		return errors.New(errorString)
-	} else {
-		return nil
-	}
-}
 
-func (bc *BasicConfig) ReadTOML(data string) error {
-	_, err := toml.Decode(data, &bc)
-	if err != nil {
-		err = errors.Wrap(err, "Could not decode TOML")
-	} else {
-		err = bc.Verify()
+	// Test the Database section
+	// This iterates over all fields in the Database subsection
+	// All these fields are strings and mandatory
+	// So if any one of these is empty, the error string is appended.
+	v := reflect.ValueOf(bc.Database)
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).String() == "" {
+			// That weird `v.Type().Field(i).Name` gives the field name in the struct
+			errorString += "Incomplete DB Config section: field " + v.Type().Field(i).Name
+		}
 	}
-	return err
+
+	// Test the Logging section
+	if bc.Logging.LogToFile && bc.Logging.LogFile == "" {
+		errorString += "Incomplete Logging Config section: File logging enabled but no file path set."
+	}
+	if bc.Logging.LogToFile && bc.Logging.FileLogLevel == "" {
+		errorString += "Incomplete Logging Config section: File logging enabled but no log level set."
+	}
+	if bc.Logging.LogToStdout && bc.Logging.StdoutLogLevel == "" {
+		errorString += "Incomplete Logging Config section: Stdout logging enabled but no log level set."
+	}
+
+	if errorString == "" {
+		return nil
+	} else {
+		return errors.Wrap(errors.New(errorString), "Config verification error.")
+	}
 }
 
 func (bc *BasicConfig) ReadConfig(fpath string) error {
