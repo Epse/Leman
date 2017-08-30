@@ -14,12 +14,12 @@ type Item struct {
 	Brand                 string
 	PricePerTime          float32
 	TimeUnit              string
-	inStockIIT            bool
+	InStockIIT            bool
 }
 
 func (i Item) IsInStock() bool {
 	if i.IsIndividuallyTracked {
-		return i.inStockIIT
+		return i.InStockIIT
 	} else {
 		return i.QuantityAvailableIGT > 0
 	}
