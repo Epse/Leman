@@ -18,7 +18,18 @@ func TestVerify(t *testing.T) {
 	bc.Logging.LogToFile = false
 	bc.Logging.LogToStdout = true
 	bc.Logging.StdoutLogLevel = "INFO"
+	bc.Network.Port = 65536
 
+	if bc.Verify() == nil {
+		t.Fail()
+	}
+
+	bc.Network.Port = 0
+	if bc.Verify() == nil {
+		t.Fail()
+	}
+
+	bc.Network.Port = 8080
 	err := bc.Verify()
 	if err != nil {
 		t.Fail()

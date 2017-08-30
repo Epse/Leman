@@ -7,3 +7,6 @@
 [Logging]
     LogToStdout = true
     StdoutLogLevel = "INFO"
+
+[Network]
+    Port = 8080

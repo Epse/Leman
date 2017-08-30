@@ -12,6 +12,7 @@ import (
 type BasicConfig struct {
 	Database DatabaseConfig
 	Logging  LoggingConfig
+	Network  NetworkConfig
 }
 
 type DatabaseConfig struct {
@@ -27,6 +28,10 @@ type LoggingConfig struct {
 	LogFile        string
 	FileLogLevel   string
 	StdoutLogLevel string
+}
+
+type NetworkConfig struct {
+	Port int
 }
 
 func (bc *BasicConfig) Verify() error {
@@ -53,6 +58,11 @@ func (bc *BasicConfig) Verify() error {
 	}
 	if bc.Logging.LogToStdout && bc.Logging.StdoutLogLevel == "" {
 		errorString += "Incomplete Logging Config section: Stdout logging enabled but no log level set."
+	}
+
+	// Test the Network section
+	if bc.Network.Port == 0 || bc.Network.Port > 65535 {
+		errorString += "Invalid Network Config section: Invalid Port number."
 	}
 
 	if errorString == "" {
