@@ -55,8 +55,8 @@ func itemNewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func unresolvedRouteHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusBadRequest)
-	fmt.Fprintf(w, "BAD REQUEST: route does not exist")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprintf(w, "404 NOT FOUND:  route does not exist")
 	log.Error("Unresolved route requested, route: " + r.URL.String())
 }
 
@@ -151,7 +151,7 @@ func main() {
 	http.HandleFunc("/item/view/", itemViewHandler)
 	http.HandleFunc("/item/update/", itemUpdateHandler)
 	http.HandleFunc("/item/new/", itemNewHandler)
-	http.HandleFunc("*", unresolvedRouteHandler)
+	http.HandleFunc("/", unresolvedRouteHandler)
 	log.Info("Preparing to serve")
 	http.ListenAndServe(":8080", nil)
 }
