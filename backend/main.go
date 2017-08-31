@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 var conf config.BasicConfig
@@ -153,5 +154,5 @@ func main() {
 	http.HandleFunc("/item/new/", itemNewHandler)
 	http.HandleFunc("/", unresolvedRouteHandler)
 	log.Info("Preparing to serve")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+strconv.Itoa(conf.Network.Port), nil)
 }
