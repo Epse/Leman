@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/Epse/Leman/backend/config"
+	"github.com/Epse/Leman/backend/data"
 	"github.com/op/go-logging"
 	"github.com/pkg/errors"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var conf config.BasicConfig
@@ -16,48 +18,69 @@ var log = logging.MustGetLogger("main")
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "501 NOT IMPLEMENTED")
+	fmt.Fprint(w, "501 NOT IMPLEMENTED")
 	log.Error("itemListHandler not implemented but requested")
 }
 
 func itemsInStockHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "501 NOT IMPLEMENTED")
+	fmt.Fprint(w, "501 NOT IMPLEMENTED")
 	log.Error("itemsInStockHandler not implemented but requested")
 }
 
 func itemsRentedHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "501 NOT IMPLEMENTED")
+	fmt.Fprint(w, "501 NOT IMPLEMENTED")
 	log.Error("itemsRentedHandler not implemented but requested")
 }
 
 func itemViewHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO
-	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "501 not implemented.")
-	log.Error("itemViewHandler not implemented but requested")
+	productString := strings.TrimPrefix(r.URL.String(), "/")
+	productString = strings.TrimSuffix(productString, "/")
+	productID, err := strconv.Atoi(productString)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Error(fmt.Sprintf("Given parameter %s can't extract product ID", r.URL))
+		fmt.Fprintf(w, "501 BAD REQUEST\nCan't extract product ID from URL: %s", r.URL)
+		return
+	}
+	product, err := data.GetProduct(productID, &conf)
+	if err != nil {
+		log.Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 INTERNAL SERVER ERROR")
+		return
+	}
+	productResponse, err := product.GetResponse()
+	if err != nil {
+		log.Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 INTERNAL SERVER ERROR")
+		return
+	}
+	fmt.Fprint(w, productResponse)
 }
 
 func itemUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "501 not implemented.")
+	fmt.Fprint(w, "501 not implemented.")
 	log.Error("itemUpdateHandler not implemented but requested")
 }
 
 func itemNewHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "501 not implemented.")
+	fmt.Fprint(w, "501 not implemented.")
 	log.Error("itemNewHandler not implemented but requested")
 }
 
 func unresolvedRouteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintf(w, "404 NOT FOUND:  route does not exist")
+	fmt.Fprint(w, "404 NOT FOUND:  route does not exist")
 	log.Error("Unresolved route requested, route: " + r.URL.String())
 }
 
