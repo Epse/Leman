@@ -2,9 +2,8 @@
 package data
 
 type BasicTrackable struct {
-	TrackableID        int
-	Product            BasicProduct
-	TotalQuantity      int
-	LocationIIT        BasicLocation
-	QuantitiyAvailable int
+	TrackableID   int
+	Product       BasicProduct
+	TotalQuantity int
+	LocationIIT   BasicLocation
 }

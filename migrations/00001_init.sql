@@ -80,7 +80,6 @@ CREATE TABLE Trackables (
        Product int NOT NULL,
        TotalQuantity int NOT NULL,
        LocationIIT int,
-       QuantityAvailable int NOT NULL,
        CONSTRAINT trackables_product_products_productid_fkey FOREIGN KEY (Product)
                   REFERENCES Products (ProductID) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE CASCADE,
