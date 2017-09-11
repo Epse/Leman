@@ -15,6 +15,25 @@ import (
 var conf config.BasicConfig
 var log = logging.MustGetLogger("main")
 
+func stringToLogLevel(logString string) (logging.Level, error) {
+	switch logString {
+	case "DEBUG":
+		return logging.DEBUG, nil
+	case "INFO":
+		return logging.INFO, nil
+	case "NOTICE":
+		return logging.NOTICE, nil
+	case "WARNING":
+		return logging.WARNING, nil
+	case "ERROR":
+		return logging.ERROR, nil
+	case "CRITICAL":
+		return logging.CRITICAL, nil
+	default:
+		return logging.DEBUG, errors.New("invalid log level")
+	}
+}
+
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	w.WriteHeader(http.StatusNotImplemented)
@@ -99,22 +118,12 @@ func loggingSetup() error {
 		logStdoutBackend := logging.NewLogBackend(os.Stdout, "", 0)
 		backendStdoutFormatter := logging.NewBackendFormatter(logStdoutBackend, logConsoleFormat)
 		backendStdoutFormatterLeveled := logging.AddModuleLevel(backendStdoutFormatter)
-		switch conf.Logging.StdoutLogLevel {
-		case "DEBUG":
-			backendStdoutFormatterLeveled.SetLevel(logging.DEBUG, "")
-		case "INFO":
-			backendStdoutFormatterLeveled.SetLevel(logging.INFO, "")
-		case "NOTICE":
-			backendStdoutFormatterLeveled.SetLevel(logging.NOTICE, "")
-		case "WARNING":
-			backendStdoutFormatterLeveled.SetLevel(logging.WARNING, "")
-		case "ERROR":
-			backendStdoutFormatterLeveled.SetLevel(logging.ERROR, "")
-		case "CRITICAL":
-			backendStdoutFormatterLeveled.SetLevel(logging.CRITICAL, "")
-		default:
-			return errors.New("invalid stdout log level")
+		logLevel, err := stringToLogLevel(conf.Logging.StdoutLogLevel)
+		if err != nil {
+			return errors.Wrap(err, "Couldn't parse Stdout log level")
 		}
+
+		backendStdoutFormatterLeveled.SetLevel(logLevel, "")
 		loggingLeveledStdoutBackend = backendStdoutFormatterLeveled
 	}
 	if conf.Logging.LogToFile {
@@ -125,22 +134,11 @@ func loggingSetup() error {
 		logFileBackend := logging.NewLogBackend(f, "", 0)
 		backendFileFormatter := logging.NewBackendFormatter(logFileBackend, logFormat)
 		backendFileFormatterLeveled := logging.AddModuleLevel(backendFileFormatter)
-		switch conf.Logging.FileLogLevel {
-		case "DEBUG":
-			backendFileFormatterLeveled.SetLevel(logging.DEBUG, "")
-		case "INFO":
-			backendFileFormatterLeveled.SetLevel(logging.INFO, "")
-		case "NOTICE":
-			backendFileFormatterLeveled.SetLevel(logging.NOTICE, "")
-		case "WARNING":
-			backendFileFormatterLeveled.SetLevel(logging.WARNING, "")
-		case "ERROR":
-			backendFileFormatterLeveled.SetLevel(logging.ERROR, "")
-		case "CRITICAL":
-			backendFileFormatterLeveled.SetLevel(logging.CRITICAL, "")
-		default:
-			return errors.New("invalid file log level")
+		logLevel, err := stringToLogLevel(conf.Logging.FileLogLevel)
+		if err != nil {
+			return errors.Wrap(err, "Can't set file log level")
 		}
+		backendFileFormatterLeveled.SetLevel(logLevel, "")
 		loggingLeveledFileBackend = backendFileFormatterLeveled
 	}
 
