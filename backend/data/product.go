@@ -73,3 +73,46 @@ func (product BasicProduct) GetResponse() ([]byte, error) {
 	}
 	return response, nil
 }
+
+// Return an array of all products
+func GetAllProducts(conf *config.BasicConfig) ([]BasicProduct, error) {
+	var products []BasicProduct
+
+	db, err := dbase.GetDBObject(dbase.GetInfoString(conf))
+	if err != nil {
+		return products, errors.Wrap(err, "Querying for all products")
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM Products")
+	if err != nil {
+		return products, errors.Wrap(err, "Was querying for all products")
+	}
+
+	i := 0
+	for rows.Next() {
+		var brandID int
+		var categoryID int
+		err := rows.Scan(&products[i].ProductID, &products[i].Title, &brandID, &categoryID, &products[i].IsIndividuallyTracked, &products[i].PricePerTime, &products[i].TimeUnit)
+
+		if err != nil {
+			return products, errors.Wrap(err, "Couldn't scan product.")
+		}
+
+		// Lets figure out the brand
+		products[i].Brand, err = GetBrand(brandID, conf)
+		if err != nil {
+			return products, errors.Wrapf(err, "Was resolving brand with ID %d", brandID)
+		}
+
+		// And the category
+		products[i].Category, err = GetCategory(categoryID, conf)
+		if err != nil {
+			return products, errors.Wrapf(err, "Was resolving category ID %d", categoryID)
+		}
+
+		i++
+	}
+
+	return products, nil
+}
