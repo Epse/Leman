@@ -35,10 +35,21 @@ func stringToLogLevel(logString string) (logging.Level, error) {
 }
 
 func itemListHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO
-	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprint(w, "501 NOT IMPLEMENTED")
-	log.Error("itemListHandler not implemented but requested")
+	productList, err := data.GetAllProducts(&conf)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 Internal Server Error while getting all products")
+		log.Error("Couldn't get all products. Error: " + err.Error())
+	}
+
+	productResponse, err := data.GetProductListResponse(productList)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 Internal Server Error while getting product response")
+		log.Error("Couldn't generate response. Error: " + err.Error())
+	}
+
+	fmt.Fprint(w, productResponse)
 }
 
 func itemsInStockHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,10 +70,9 @@ func itemViewHandler(w http.ResponseWriter, r *http.Request) {
 	productString := strings.TrimPrefix(r.URL.String(), "/")
 	productString = strings.TrimSuffix(productString, "/")
 	productID, err := strconv.Atoi(productString)
-
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error(fmt.Sprintf("Given parameter %s can't extract product ID", r.URL))
+		log.Errorf("Given parameter %s can't extract product ID", r.URL)
 		fmt.Fprintf(w, "501 BAD REQUEST\nCan't extract product ID from URL: %s", r.URL)
 		return
 	}
