@@ -41,7 +41,15 @@ func itemListHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "500 Internal Server Error while getting all products")
 		log.Error("Couldn't get all products. Error: " + err.Error())
 	}
-	// TODO make that productList a neat response
+
+	productResponse, err := data.GetProductListResponse(productList)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 Internal Server Error while getting product response")
+		log.Error("Couldn't generate response. Error: " + err.Error())
+	}
+
+	fmt.Fprint(w, productResponse)
 }
 
 func itemsInStockHandler(w http.ResponseWriter, r *http.Request) {

@@ -116,3 +116,12 @@ func GetAllProducts(conf *config.BasicConfig) ([]BasicProduct, error) {
 
 	return products, nil
 }
+
+func GetProductListResponse(products []BasicProduct) ([]byte, error) {
+	json, err := json.Marshal(products)
+	if err != nil {
+		return json, errors.Wrap(err, "Was encoding Product List")
+	}
+
+	return json, nil
+}
